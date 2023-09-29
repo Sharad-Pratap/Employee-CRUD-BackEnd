@@ -1,8 +1,10 @@
+import "dotenv/config";
 import express from "express";
 import mongoose, { mongo } from "mongoose";
 import cors from "cors";
 import bodyParser from "body-parser";
 import multer from "multer";
+
 
 const app = express();
 app.use(cors());
@@ -10,7 +12,7 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/crudDB")
+  .connect(process.env.DATABASE_URL)
   .then(() => {
     console.log("Database connection established");
   })
@@ -65,8 +67,7 @@ app.get("/getUser/:id", (req, res) => {
 
 app.put("/updateUser/:id", upload.single("photo"), (req, res) => {
   const id = req.params.id;
-  console.log("Received PUT request for user ID:", id);
-  console.log("Request body:", req.body);
+ 
 
   User.findByIdAndUpdate(
     { _id: id },
@@ -79,7 +80,6 @@ app.put("/updateUser/:id", upload.single("photo"), (req, res) => {
     }
   )
     .then((user) => {
-      console.log("Updated user:", user);
       res.json(user);
     })
     .catch((err) => {
